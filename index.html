@@ -28,7 +28,6 @@ body {
 
 canvas {
     background: black;
-    border-radius: 50%;
 }
 </style>
 </head>
@@ -44,5 +43,65 @@ const canvas = document.getElementById("clock");
 const ctx = canvas.getContext("2d");
 const radius = canvas.width / 2;
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width,
+function drawClock() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const now = new Date();
+    const sec = now.getSeconds() + now.getMilliseconds()/1000;
+    const min = now.getMinutes() + sec/60;
+    const hour = now.getHours()%12 + min/60;
+
+    // центр
+    const cx = radius;
+    const cy = radius;
+
+    // рамка
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius - 5, 0, 2*Math.PI);
+    ctx.strokeStyle = "gold";
+    ctx.lineWidth = 8;
+    ctx.stroke();
+
+    // цифры
+    ctx.font = "22px Comic Sans MS";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    for (let i = 1; i <= 12; i++) {
+        const angle = (i * 30 - 90) * Math.PI/180;
+        const x = cx + Math.cos(angle) * (radius - 30);
+        const y = cy + Math.sin(angle) * (radius - 30);
+        ctx.fillStyle = hsl(${i*30},100%,60%);
+        ctx.fillText(i, x, y);
+    }
+
+    drawHand(hour * 30, radius * 0.5, 8, "yellow");
+    drawHand(min * 6, radius * 0.7, 6, "cyan");
+    drawHand(sec * 6, radius * 0.9, 3, "red");
+
+    requestAnimationFrame(drawClock);
+}
+
+function drawHand(angle, length, width, color) {
+    const cx = radius;
+    const cy = radius;
+
+    ctx.beginPath();
+    ctx.lineWidth = width;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = color;
+
+    const rad = (angle - 90) * Math.PI/180;
+    const x = cx + Math.cos(rad) * length;
+    const y = cy + Math.sin(rad) * length;
+
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
+
+drawClock();
+</script>
+
+</body>
+</html>
