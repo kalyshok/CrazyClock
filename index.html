@@ -86,6 +86,20 @@ function drawHand(angle, length, width, color) {
     const cx = radius;
     const cy = radius;
 
+    const rad = (angle - 90) * Math.PI/180;
+    const x = cx + Math.cos(rad) * length;
+    const y = cy + Math.sin(rad) * length;
+
+    ctx.beginPath();
+    ctx.strokeStyle = "white";   // временно делаем белыми
+    ctx.lineWidth = 12;          // делаем очень толстыми
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
+    const cx = radius;
+    const cy = radius;
+
     ctx.beginPath();
     ctx.lineWidth = width;
     ctx.lineCap = "round";
