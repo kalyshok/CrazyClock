@@ -6,7 +6,7 @@
 <title>Crazy Clock</title>
 </head>
 
-<body style="margin:0;background:#000;display:flex;justify-content:center;align-items:center;height:100vh;">
+<body style="margin:0;background:black;display:flex;justify-content:center;align-items:center;height:100vh;">
 
 <canvas id="clock" width="340" height="340"></canvas>
 
@@ -15,7 +15,7 @@ const canvas = document.getElementById("clock");
 const ctx = canvas.getContext("2d");
 const radius = canvas.width/2;
 
-const crazyOrder = [8,3,11,1,6,9,2,4,10,7,12,5]; // хаос как в Crazy Hours
+const crazyOrder = [8,3,11,1,6,9,2,4,10,7,12,5];
 
 function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -28,28 +28,21 @@ function draw(){
     const cx = radius;
     const cy = radius;
 
-    // золотой обод
-    const grad = ctx.createRadialGradient(cx,cy,radius*0.6,cx,cy,radius);
-    grad.addColorStop(0,"#FFD700");
-    grad.addColorStop(1,"#B8860B");
-
+    // золотой круг
     ctx.beginPath();
     ctx.arc(cx,cy,radius-5,0,Math.PI*2);
-    ctx.strokeStyle = grad;
+    ctx.strokeStyle = "gold";
     ctx.lineWidth = 18;
     ctx.stroke();
 
-    // внутренняя глянцевая часть
-    const innerGrad = ctx.createRadialGradient(cx,cy,10,cx,cy,radius-30);
-    innerGrad.addColorStop(0,"#222");
-    innerGrad.addColorStop(1,"#000");
+    // внутренний круг
     ctx.beginPath();
     ctx.arc(cx,cy,radius-20,0,Math.PI*2);
-    ctx.fillStyle = innerGrad;
+    ctx.fillStyle = "#111";
     ctx.fill();
 
-    // цифры (хаос)
-    ctx.font = "bold 28px Comic Sans MS";
+    // цифры хаотичные
+    ctx.font = "bold 28px Arial";
     ctx.textAlign="center";
     ctx.textBaseline="middle";
 
@@ -63,13 +56,13 @@ function draw(){
         ctx.fillText(crazyOrder[i],x,y);
     }
 
-    // определяем где находится текущий час в crazyOrder
+    // правильная позиция часа
     const hourIndex = crazyOrder.indexOf(hour);
     const hourAngle = hourIndex*30;
 
-    drawHand(hourAngle,80,10,"#FFDD00");      // часовая
-    drawHand(min*6,110,6,"#00FFFF");          // минутная
-    drawHand(sec*6,130,3,"#FF0040");          // секундная
+    drawHand(hourAngle,80,10,"yellow");
+    drawHand(min*6,110,6,"cyan");
+    drawHand(sec*6,130,3,"red");
 
     // центр
     ctx.beginPath();
@@ -94,10 +87,7 @@ function drawHand(angle,length,width,color){
     ctx.strokeStyle=color;
     ctx.lineWidth=width;
     ctx.lineCap="round";
-    ctx.shadowColor=color;
-    ctx.shadowBlur=10;
     ctx.stroke();
-    ctx.shadowBlur=0;
 }
 
 draw();
