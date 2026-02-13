@@ -6,45 +6,84 @@
 <title>Crazy Clock</title>
 </head>
 
-<body style="margin:0;background:black;display:flex;justify-content:center;align-items:center;height:100vh;">
+<body style="margin:0;background:#000;display:flex;justify-content:center;align-items:center;height:100vh;">
 
-<canvas id="clock" width="300" height="300"></canvas>
+<canvas id="clock" width="340" height="340"></canvas>
 
 <script>
 const canvas = document.getElementById("clock");
 const ctx = canvas.getContext("2d");
-const radius = canvas.width / 2;
+const radius = canvas.width/2;
 
-function draw() {
-    ctx.clearRect(0,0,300,300);
+const crazyOrder = [8,3,11,1,6,9,2,4,10,7,12,5]; // хаос как в Crazy Hours
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
     const now = new Date();
     const sec = now.getSeconds() + now.getMilliseconds()/1000;
     const min = now.getMinutes() + sec/60;
-    const hour = now.getHours()%12 + min/60;
+    const hour = now.getHours()%12 || 12;
 
     const cx = radius;
     const cy = radius;
 
-    // круг
+    // золотой обод
+    const grad = ctx.createRadialGradient(cx,cy,radius*0.6,cx,cy,radius);
+    grad.addColorStop(0,"#FFD700");
+    grad.addColorStop(1,"#B8860B");
+
     ctx.beginPath();
-    ctx.arc(cx, cy, radius-5, 0, Math.PI*2);
-    ctx.strokeStyle = "gold";
-    ctx.lineWidth = 8;
+    ctx.arc(cx,cy,radius-5,0,Math.PI*2);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 18;
     ctx.stroke();
 
-    // стрелки
-    drawHand(hour*30, 80, 8, "yellow");
-    drawHand(min*6, 110, 6, "cyan");
-    drawHand(sec*6, 130, 3, "red");
+    // внутренняя глянцевая часть
+    const innerGrad = ctx.createRadialGradient(cx,cy,10,cx,cy,radius-30);
+    innerGrad.addColorStop(0,"#222");
+    innerGrad.addColorStop(1,"#000");
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius-20,0,Math.PI*2);
+    ctx.fillStyle = innerGrad;
+    ctx.fill();
+
+    // цифры (хаос)
+    ctx.font = "bold 28px Comic Sans MS";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+
+    for(let i=0;i<12;i++){
+        const angle = i*30 - 90;
+        const rad = angle*Math.PI/180;
+        const x = cx + Math.cos(rad)*(radius-50);
+        const y = cy + Math.sin(rad)*(radius-50);
+
+        ctx.fillStyle = hsl(${i*30},100%,60%);
+        ctx.fillText(crazyOrder[i],x,y);
+    }
+
+    // определяем где находится текущий час в crazyOrder
+    const hourIndex = crazyOrder.indexOf(hour);
+    const hourAngle = hourIndex*30;
+
+    drawHand(hourAngle,80,10,"#FFDD00");      // часовая
+    drawHand(min*6,110,6,"#00FFFF");          // минутная
+    drawHand(sec*6,130,3,"#FF0040");          // секундная
+
+    // центр
+    ctx.beginPath();
+    ctx.arc(cx,cy,8,0,Math.PI*2);
+    ctx.fillStyle="gold";
+    ctx.fill();
 
     requestAnimationFrame(draw);
 }
 
-function drawHand(angle, length, width, color){
+function drawHand(angle,length,width,color){
     const cx = radius;
     const cy = radius;
-    const rad = (angle-90) * Math.PI/180;
+    const rad = (angle-90)*Math.PI/180;
 
     ctx.beginPath();
     ctx.moveTo(cx,cy);
@@ -52,10 +91,13 @@ function drawHand(angle, length, width, color){
         cx + Math.cos(rad)*length,
         cy + Math.sin(rad)*length
     );
-    ctx.strokeStyle = color;
-    ctx.lineWidth = width;
-    ctx.lineCap = "round";
+    ctx.strokeStyle=color;
+    ctx.lineWidth=width;
+    ctx.lineCap="round";
+    ctx.shadowColor=color;
+    ctx.shadowBlur=10;
     ctx.stroke();
+    ctx.shadowBlur=0;
 }
 
 draw();
