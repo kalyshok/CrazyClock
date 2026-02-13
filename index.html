@@ -1,15 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crazy Clock</title>
-</head>
-
-<body style="margin:0;background:black;display:flex;justify-content:center;align-items:center;height:100vh;">
-
-<canvas id="clock" width="340" height="340"></canvas>
-
 <script>
 const canvas = document.getElementById("clock");
 const ctx = canvas.getContext("2d");
@@ -28,20 +16,17 @@ function draw(){
     const cx = radius;
     const cy = radius;
 
-    // золотой круг
     ctx.beginPath();
     ctx.arc(cx,cy,radius-5,0,Math.PI*2);
     ctx.strokeStyle = "gold";
     ctx.lineWidth = 18;
     ctx.stroke();
 
-    // внутренний круг
     ctx.beginPath();
     ctx.arc(cx,cy,radius-20,0,Math.PI*2);
     ctx.fillStyle = "#111";
     ctx.fill();
 
-    // цифры хаотичные
     ctx.font = "bold 28px Arial";
     ctx.textAlign="center";
     ctx.textBaseline="middle";
@@ -51,12 +36,10 @@ function draw(){
         const rad = angle*Math.PI/180;
         const x = cx + Math.cos(rad)*(radius-50);
         const y = cy + Math.sin(rad)*(radius-50);
-
-        ctx.fillStyle = hsl(${i*30},100%,60%);
+        ctx.fillStyle = `hsl(${i*30},100%,60%)`;
         ctx.fillText(crazyOrder[i],x,y);
     }
 
-    // правильная позиция часа
     const hourIndex = crazyOrder.indexOf(hour);
     const hourAngle = hourIndex*30;
 
@@ -64,7 +47,6 @@ function draw(){
     drawHand(min*6,110,6,"cyan");
     drawHand(sec*6,130,3,"red");
 
-    // центр
     ctx.beginPath();
     ctx.arc(cx,cy,8,0,Math.PI*2);
     ctx.fillStyle="gold";
@@ -77,13 +59,9 @@ function drawHand(angle,length,width,color){
     const cx = radius;
     const cy = radius;
     const rad = (angle-90)*Math.PI/180;
-
     ctx.beginPath();
     ctx.moveTo(cx,cy);
-    ctx.lineTo(
-        cx + Math.cos(rad)*length,
-        cy + Math.sin(rad)*length
-    );
+    ctx.lineTo(cx + Math.cos(rad)*length, cy + Math.sin(rad)*length);
     ctx.strokeStyle=color;
     ctx.lineWidth=width;
     ctx.lineCap="round";
@@ -92,6 +70,3 @@ function drawHand(angle,length,width,color){
 
 draw();
 </script>
-
-</body>
-</html>
