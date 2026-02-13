@@ -1,12 +1,91 @@
 <!DOCTYPE html>
 <html>
-<body style="background:black;color:white;text-align:center;margin-top:50px;font-size:30px;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crazy Clock Minimal</title>
+</head>
 
-TEST JS LOAD
+<body style="margin:0;background:black;display:flex;justify-content:center;align-items:center;height:100vh;">
+
+<canvas id="clock" width="300" height="300"></canvas>
 
 <script>
-console.log("JS работает");
-document.body.innerHTML += "<br>Script OK";
+const canvas = document.getElementById("clock");
+const ctx = canvas.getContext("2d");
+const radius = canvas.width/2;
+
+// хаотичный порядок цифр
+const crazyOrder = [8,3,11,1,6,9,2,4,10,7,12];
+
+function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    const now = new Date();
+    const sec = now.getSeconds() + now.getMilliseconds()/1000;
+    const min = now.getMinutes() + sec/60;
+    const hour = now.getHours()%12 || 12;
+
+    const cx = radius;
+    const cy = radius;
+
+    // золотой круг
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius-5,0,Math.PI*2);
+    ctx.strokeStyle = "gold";
+    ctx.lineWidth = 10;
+    ctx.stroke();
+
+    // внутренний черный круг
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius-20,0,Math.PI*2);
+    ctx.fillStyle = "#111";
+    ctx.fill();
+
+    // цифры
+    ctx.font = "bold 20px Arial";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    for(let i=0;i<12;i++){
+        const angle = i*30 - 90;
+        const rad = angle*Math.PI/180;
+        const x = cx + Math.cos(rad)*(radius-50);
+        const y = cy + Math.sin(rad)*(radius-50);
+        ctx.fillStyle = `hsl(${i*30},100%,60%)`;
+        ctx.fillText(crazyOrder[i],x,y);
+    }
+
+    // вычисляем угол для часовой стрелки
+    const hourIndex = crazyOrder.indexOf(hour);
+    const hourAngle = hourIndex*30;
+
+    drawHand(hourAngle,70,8,"yellow");
+    drawHand(min*6,100,6,"cyan");
+    drawHand(sec*6,120,3,"red");
+
+    // центр
+    ctx.beginPath();
+    ctx.arc(cx,cy,5,0,Math.PI*2);
+    ctx.fillStyle="gold";
+    ctx.fill();
+
+    requestAnimationFrame(draw);
+}
+
+function drawHand(angle,length,width,color){
+    const cx = radius;
+    const cy = radius;
+    const rad = (angle-90)*Math.PI/180;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx + Math.cos(rad)*length, cy + Math.sin(rad)*length);
+    ctx.strokeStyle=color;
+    ctx.lineWidth=width;
+    ctx.lineCap="round";
+    ctx.stroke();
+}
+
+draw();
 </script>
 
 </body>
